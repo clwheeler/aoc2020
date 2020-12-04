@@ -8,18 +8,17 @@ day_str = "00"
 test_input = """x"""
 
 
-def load_inputs():
+def load_inputs(input_str=None):
     inputs = []
+
+    if input_str:
+        inputs = input_str.splitlines()
+
     with open('./inputs/day{}_input.txt'.format(day_str), 'r') as f:
         for line in f:
             inputs.append(line.rstrip())
-    inputs = parse_inputs(inputs)
-    return inputs
 
-
-def load_test_inputs(_):
-    parsed_test_input = test_input.splitlines()
-    parsed_test_input = parse_inputs(test_input)
+    parsed_test_input = parse_inputs(inputs)
     return parsed_test_input
 
 
@@ -29,10 +28,12 @@ def parse_inputs(inputs):
 
 
 def solve_part1(start):
+    # inputs = load_inputs(test_input)
     return "TODO"
 
 
 def solve_part2(start):
+    # inputs = load_inputs(test_input)
     return "TODO"
 
 
