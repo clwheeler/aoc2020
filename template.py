@@ -12,18 +12,17 @@ def load_inputs(input_str=None):
     inputs = []
 
     if input_str:
-        inputs = input_str.splitlines()
-
-    with open('./inputs/day{}_input.txt'.format(day_str), 'r') as f:
-        for line in f:
-            inputs.append(line.rstrip())
+        inputs = input_str
+    else:
+        with open('./inputs/day{}_input.txt'.format(day_str), 'r') as f:
+            inputs = f.read()
 
     parsed_test_input = parse_inputs(inputs)
     return parsed_test_input
 
 
 def parse_inputs(inputs):
-    parsed = [x.split(' ') for x in inputs]
+    parsed = inputs.split('\n')
     return parsed
 
 
