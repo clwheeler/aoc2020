@@ -119,6 +119,36 @@ def find_permutations(this_elem, adapter_list):
     return this_sum
 
 
+def solve_part2_linear():
+    """
+    Consider the test inputs:  [0, 1, 4, 5, 6, 7, 10, 11, 12, 15, 16, 19, 22]
+    Because each adapter has a range of 1-3, there are 3 paths that get to adapter 22. It comes from 19, 20, or 21.
+    Of those, we don't have adapter 20 or 21, so there are 0 paths that go through them. There are ? ways to get to 19
+
+    paths(22) = paths(21) + paths(20) + paths(19)
+    paths(22) = 0 + 0 + paths(19)
+
+    How many ways are there to get to 19? Same logic applies
+    paths(19) = paths(18) + paths(17) + paths(16)
+
+    We can walk that all the way back to paths(1), and there's only 1 way to get to 1
+    Reversing that process, we have a Tribonacci sequence where certain values are set to 0 instead
+    of their expected value.
+    """
+    inputs = load_inputs()
+    last_adapter_value = inputs[-1]
+
+    # only 1 path to the first element
+    paths_to = [1] + [0] * last_adapter_value
+
+    for joltage in inputs:
+        # on the first couple iterations these wrap around, but the
+        # wraparound values are 0 as desired
+        paths_to[joltage] = paths_to[joltage-1] + paths_to[joltage-2] + paths_to[joltage-3]
+
+    return paths_to[-1]
+
+
 def solve_part2(start):
     inputs = load_inputs()
     inputs = [0] + inputs + [inputs[-1] + 3]
@@ -133,8 +163,14 @@ def run():
     print "Runtime: {} seconds".format(time.time() - start_time)
 
     start_time = time.time()
-    print "Part 2:"
+    print "Part 2 Recursion:"
     print solve_part2(0)
     print "Runtime: {} seconds".format(time.time() - start_time)
+
+    start_time = time.time()
+    print "Part 2 Tribonacci:"
+    print solve_part2_linear()
+    print "Runtime: {} seconds".format(time.time() - start_time)
+
 
 run()
