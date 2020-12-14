@@ -40,8 +40,8 @@ class Mover:
     def __init__(self):
         pass
 
-    def print_pos(self):
-        print self.pos
+    def get_pos(self):
+        return self.pos
 
     def turn(self, dir, deg):
         # pos = clockwise
@@ -81,13 +81,70 @@ def solve_part1(start):
         else:
             mover.move(i[0], int(i[1:]))
 
-    mover.print_pos()
-    return "TODO"
+    return abs(mover.get_pos()[0]) + abs(mover.get_pos()[1])
+
+
+class FollowMover:
+    pos = (0, 0)
+    waypoint = (10, -1)
+
+    def __init__(self):
+        pass
+
+    def get_pos(self):
+        return self.pos
+
+    def rotate_waypoint(self, dir, deg):
+        # rotation around the origin:
+        # x = xcos(a) - ysin(a)
+        # y = xsin(a) + ycos(a)
+        # sin / cos lookups
+        sin = {90: 1, 180: 0, 270: -1}
+        cos = {90: 0, 180: -1, 270: 0}
+
+        # flip sign on sin for neg numbers.
+        # cos(180)/cos(-180) doesn't flip sign in this range
+        if dir == 'L':
+            newx = self.waypoint[0]*cos[deg] - self.waypoint[1]*-sin[deg]
+            newy = self.waypoint[0]*-sin[deg] + self.waypoint[1]*cos[deg]
+        elif dir == 'R':
+            newx = self.waypoint[0]*cos[deg] - self.waypoint[1]*sin[deg]
+            newy = self.waypoint[0]*sin[deg] + self.waypoint[1]*cos[deg]
+
+        self.waypoint = (newx, newy)
+
+    def move_waypoint(self, dir, val):
+        # waypoint co-ords relative to this pos
+        offset = (0, 0)
+        if dir == 'N':
+            offset = (0, -val)
+        elif dir == 'E':
+            offset = (val, 0)
+        elif dir == 'W':
+            offset = (-val, 0)
+        elif dir == 'S':
+            offset = (0, val)
+
+        self.waypoint = (self.waypoint[0] + offset[0], self.waypoint[1] + offset[1])
+
+    def chase(self, val):
+        # move towards waypoint val times
+        new_pos = (self.pos[0] + self.waypoint[0] * val, self.pos[1] + self.waypoint[1] * val)
+        self.pos = new_pos
 
 
 def solve_part2(start):
-    # inputs = load_inputs(test_input)
-    return "TODO"
+    inputs = load_inputs()
+    mover = FollowMover()
+    for i in inputs:
+        if i[0] in ['L', 'R']:
+            mover.rotate_waypoint(i[0], int(i[1:]))
+        elif i[0] in ['N', 'E', 'W', 'S']:
+            mover.move_waypoint(i[0], int(i[1:]))
+        else:
+            mover.chase(int(i[1:]))
+
+    return abs(mover.get_pos()[0]) + abs(mover.get_pos()[1])
 
 
 def run():
