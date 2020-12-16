@@ -43,8 +43,14 @@ def parse_inputs(inputs):
 
 
 def solve_part1(start):
+    """ We could go through and do a pairwise comparison of every value
+        but this is probably faster.
+        Since we're just looking for values that are _never_ valid, and
+        all values are in a given range, we can just construct a single list
+        of all values that are valid for _some_ rule, and flag an value not
+        in that list
+    """
     rules, ticket, nearby  = load_inputs()
-    # construct a single set of ranges that are valid
     valid_numbers = set()
     for rule in rules:
         for x in xrange(rule[1], rule[2]):
@@ -60,6 +66,18 @@ def solve_part1(start):
 
 
 def solve_part2(start):
+    """
+        Doing n^2 pairwise comparisons seems slow.
+        If we have the index / rule mapping correct, we know that the number
+        in that slot is within the rule bounds for _every_ ticket.
+        This means that if any one ticket has a value outside the bounds,
+        that index match that rule's field.
+        For each index, we consider each rule and eliminate the ones that
+        we violate. Some indexes will match match multiple rules
+        However, some index will only match 1 rule. We can then progressively
+        eliminate that rule from the other options, repeating until
+        it condenses into a single solution.
+    """
     rules, my_ticket, nearby  = load_inputs()
     # construct a single set of ranges that are valid
     valid_numbers = set()
@@ -75,7 +93,7 @@ def solve_part2(start):
         if not invalid_numbers:
             valid_tickets.append(ticket)
 
-    # for each index, find which field matches all rules
+    # for each index, look for a rule where all tickets match that rule
     possible_matches = [0] * len(ticket)
     for ind in xrange(len(ticket)):
         eligible_fields = [x for x in rules]
@@ -83,15 +101,17 @@ def solve_part2(start):
             for field in eligible_fields:
                 if (field[1] <= ticket[ind] <= field[2]) or \
                    (field[3] <= ticket[ind] <= field[4]):
-                    # print "{} ok".format(field[0])
                     pass
                 else:
+                    # if the rule was violated by even 1 ticket, it can't match
+                    # this index, so remove it from consideration
                     eligible_fields.remove(field)
-                    # print 'error at {} with value {}, removing {}'.format(ind, ticket[ind], field)
+                    # print 'Error at {} with value {}, removing {}'.format(ind, ticket[ind], field)
                     break
         possible_matches[ind] = [x for x in eligible_fields]
 
-    # print possible_matches
+    # most rules will have 2 or more options. Remove duplicates
+    # from where there's more than 1 until every option only has 1
     while sum([len(z) for z in possible_matches]) != len(possible_matches):
         for x in possible_matches:
             if len(x) == 1:
@@ -103,11 +123,9 @@ def solve_part2(start):
     # for ind, val in enumerate(possible_matches):
     #     print ind, val
 
-    print possible_matches
+    # just flatten our list
     correct_indexes = [x[0] for x in possible_matches]
-    print correct_indexes
     departure_indexes = [correct_indexes.index(rule) for rule in correct_indexes if 'departure' in rule[0]]
-    print departure_indexes
 
     d_product = 1
     for x in departure_indexes:
