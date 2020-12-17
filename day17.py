@@ -28,6 +28,44 @@ def parse_inputs(inputs):
     return parsed
 
 
+
+# class AutomataComputer:
+
+#     bounds_list = []
+
+#     def __init__(self, dimensions):
+#         self.dimensions = dimensions
+#         self.setupBounds()
+
+#     def setupBounds(self):
+#         for dim in range(self.dimensions):
+#             self.bounds_list.append((-1, 0, 1))
+
+#     def get_all_neighbors(self, pos):
+#         """
+#         Get all neighbors around a point (inclusive)
+#         """
+
+#         # call this recursively to get arbitrary numbers of dimensions
+#         def recursive_get(dimensions):
+#             pass
+
+#         for x in self.bounds_list:
+#             pass
+#         bounds = (-1, 0, 1)
+#         w_bounds = (0)
+#         neighbors = []
+#         for x in bounds:
+#             for y in bounds:
+#                 for z in bounds:
+#                     for w in w_bounds:
+#                         neighbors.append((pos[0]+x, pos[1]+y, pos[2]+z, pos[3]+w))
+
+#         # dedupe from 4th dim
+#         return list(set(neighbors))
+
+
+
 def get_all_neighbors(pos, fourth_dim=False):
     """
     Get all neighbors around a point (inclusive)
@@ -80,6 +118,7 @@ def solve_part1(start):
         candidates = []
         for point in active_set:
             candidates += get_all_neighbors(point)
+        candidates = set(candidates)
 
         print "considering {} candidates...".format(len(candidates))
 
@@ -109,8 +148,6 @@ def solve_part2(start):
             if col == '#':
                 active_set.add((x, y, 0, 0))
 
-    # active_set = set([(0, 0, 0), (2, 0, 0)])
-    # print "active", active_set
     steps = 6
     for rnd in xrange(steps):
         next_active_set = set()
@@ -119,6 +156,7 @@ def solve_part2(start):
         candidates = []
         for point in active_set:
             candidates += get_all_neighbors(point, True)
+        candidates = set(candidates)
 
         print "considering {} candidates...".format(len(candidates))
 
