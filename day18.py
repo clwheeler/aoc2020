@@ -26,34 +26,40 @@ def load_inputs(input_str=None):
     return parsed_test_input
 
 
+def toInt(s):
+    try:
+        ival = int(s)
+        return ival
+    except:
+        return s
+
+
 def parse_inputs(inputs):
     def parse_line(line_iter):
         """
-        Use a single iterator throughout recurisions, because we only go through every
-        term once
+        Pass a single iterator to use for all recursions, because we only go through every
+        term once. Basically, functions as a global progress counter.
         """
         res = []
 
         while True:
             try:
-                ind, val = line_iter.next()
-                if val == '(':
-                    child = parse_line(line_iter)
-                    res.append(child)
-                elif val == ')':
-                    break
-                else:
-                    try:
-                        res.append(int(val))
-                    except:
-                        res.append(val)
+                val = line_iter.next()
             except StopIteration:
                 break
+
+            if val == '(':
+                child = parse_line(line_iter)
+                res.append(child)
+            elif val == ')':
+                break
+            else:
+                res.append(toInt(val))
 
         return res
 
     parsed = inputs.split('\n')
-    parsed = [parse_line(enumerate(line.replace(' ', ''))) for line in parsed]
+    parsed = [parse_line(iter(line.replace(' ', ''))) for line in parsed]
     return parsed
 
 
@@ -89,7 +95,10 @@ def solve_part1(start):
 def addition_first_solve(terms):
     """
     Pushing / popping from the list as we go is cleaner than the raw aggregation
-    that we did above
+    that we did above.
+
+    We could make things have the same priority level by converting the tuples
+    in operators into lists of tuples, or dicts with the operator as the lookup
     """
     if type(terms) != list:
         return terms
