@@ -2,6 +2,7 @@ import collections
 import time
 import re
 import sys
+import copy
 from itertools import cycle
 
 day_str = "18"
@@ -93,28 +94,23 @@ def addition_first_solve(terms):
     if type(terms) != list:
         return terms
 
-    round_2 = []
+    operators = [('+', lambda x, y: x + y), ('*', lambda x, y: x * y)]
 
-    terms_iter = iter(terms)
-    for term in terms_iter:
-        if term == "+":
-            prv = round_2.pop()
-            nxt = terms_iter.next()
-            round_2.append(addition_first_solve(prv) + addition_first_solve(nxt))
-        else:
-            round_2.append(term)
+    this_round = terms
 
-    mult_round = []
-    terms_iter = iter(round_2)
-    for term in terms_iter:
-        if term == "*":
-            prv = mult_round.pop()
-            nxt = terms_iter.next()
-            mult_round.append(addition_first_solve(prv) * addition_first_solve(nxt))
-        else:
-            mult_round.append(term)
+    for op in operators:
+        next_round = []
+        terms_iter = iter(this_round)
+        for term in terms_iter:
+            if term == op[0]:
+                prv = next_round.pop()
+                nxt = terms_iter.next()
+                next_round.append(op[1](addition_first_solve(prv), addition_first_solve(nxt)))
+            else:
+                next_round.append(term)
+        this_round = copy.deepcopy(next_round)
 
-    return sum(mult_round)
+    return sum(this_round)
 
 
 def solve_part2(start):
