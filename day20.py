@@ -106,6 +106,13 @@ def solve_part1(start):
 
 
 def solve_part2(start):
+    """
+    Reconstruct the image starting from an arbitrary corner.
+    Since there's no orientation defined, we can pick any corner as the "top left", and
+    build from there. Luckily, each tile has a unique set of neighbors, so we dont need
+    to worry about multiple permutations: if it matches at all, it's correct.
+
+    """
     inputs = load_inputs(False)
     all_matches = []
     tiles = inputs.keys()
@@ -118,9 +125,12 @@ def solve_part2(start):
         if matches[elem]:
             all_matches.append(matches[elem])
 
-    # reconstruct image
-    # order doest matter
-    # try each flip / rotation
+    # start frmo an aribtrary corner
+    # find a match, rotate me so that the match is along the right side
+    # fill in properly oriented match
+    # repeat, for row = 1+, consider top-match and left-match
+
+    # for eery rotations / orientation, look fot the pattern
 
 
 def run():
